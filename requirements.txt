@@ -1,0 +1,14 @@
+astroid==2.8.3
+autopep8==1.5.7
+coverage==6.0.2
+flake8==4.0.1
+isort==5.9.3
+lazy-object-proxy==1.6.0
+mccabe==0.6.1
+platformdirs==2.4.0
+pycodestyle==2.8.0
+pyflakes==2.4.0
+pylint==2.11.1
+toml==0.10.2
+typing-extensions==3.10.0.2
+wrapt==1.13.2
