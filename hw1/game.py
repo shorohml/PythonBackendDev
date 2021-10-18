@@ -12,7 +12,7 @@ class TicTacGame:
 
     def validate_input(self) -> Tuple[int, int]:
         """Validate input from user.
-        Should be in '{row] {column}' format, where row and column are integers in range [0, 2].
+        Should be in '{row} {column}' format, where row and column are integers in range [0, 2].
 
         :raises ValeError: if input is in wrong format
         :return: row and column indexes
@@ -70,7 +70,7 @@ class TicTacGame:
     def start_game(self) -> str:
         """Start main loop.
 
-        :return: label of the winner ('x' or 'o')"""
+        :return: label of the winner: 'x' or 'o'"""
         while True:
             self.show_board()
             try:

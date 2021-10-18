@@ -35,14 +35,14 @@ class ValidateInputTest(unittest.TestCase):
         )
 
     def test_valid_input(self):
-        "Test TicTacGame.validate_input when user input is valid"
+        "Test TicTacGame.validate_input when user input is valid."
         for user_input, correct_result in self.valid_inputs:
             with unittest.mock.patch('builtins.input', return_value=user_input):
                 result = self.game.validate_input()
                 self.assertEqual(correct_result, result)
 
     def test_invalid_input(self):
-        "Test TicTacGame.validate_input when user input is invalid"
+        "Test TicTacGame.validate_input when user input is invalid."
         for user_input in self.invalid_inputs:
             with unittest.mock.patch('builtins.input', return_value=user_input):
                 self.assertRaises(ValueError, self.game.validate_input)
@@ -89,7 +89,7 @@ class CheckWinnerTest(unittest.TestCase):
 
 class StartgameTest(unittest.TestCase):
 
-    "Test case for TicTacGame.start_game"
+    "Test case for TicTacGame.start_game."
 
     def setUp(self):
         self.moves_for_games = (
