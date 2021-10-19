@@ -4,6 +4,8 @@ import unittest
 import unittest.mock
 from io import StringIO
 
+from parameterized import parameterized
+
 from game import TicTacGame
 
 
@@ -13,39 +15,35 @@ class ValidateInputTest(unittest.TestCase):
 
     def setUp(self):
         self.game = TicTacGame()
-        self.valid_inputs = (
-            ('1 1', (1, 1)),
-            ('0 0', (0, 0)),
-            ('2 2', (2, 2)),
-            ('0 1', (0, 1)),
-            ('0 2', (0, 2)),
-            ('2 0', (2, 0)),
-            ('1 2', (1, 2)),
-        )
-        self.invalid_inputs = (
-            '',
-            'aaa 1',
-            '0, bbbb',
-            'asdaf kfjgkfjgk',
-            '-1 0',
-            '0 100',
-            '1, 2',
-            '-20 -100',
-            '0 1 2'
-        )
 
-    def test_valid_input(self):
+    @parameterized.expand([
+        ('1 1', (1, 1)),
+        ('0 0', (0, 0)),
+        ('2 2', (2, 2)),
+        ('0 1', (0, 1)),
+        ('0 2', (0, 2)),
+        ('2 0', (2, 0)),
+        ('1 2', (1, 2)),
+    ])
+    def test_valid_input(self, user_input, correct_result):
         "Test TicTacGame.validate_input when user input is valid."
-        for user_input, correct_result in self.valid_inputs:
-            with unittest.mock.patch('builtins.input', return_value=user_input):
-                result = self.game.validate_input()
-                self.assertEqual(correct_result, result)
+        result = self.game.validate_input(user_input)
+        self.assertEqual(correct_result, result)
 
-    def test_invalid_input(self):
+    @parameterized.expand([
+        '',
+        'aaa 1',
+        '0, bbbb',
+        'asdaf kfjgkfjgk',
+        '-1 0',
+        '0 100',
+        '1, 2',
+        '-20 -100',
+        '0 1 2'
+    ])
+    def test_invalid_input(self, user_input):
         "Test TicTacGame.validate_input when user input is invalid."
-        for user_input in self.invalid_inputs:
-            with unittest.mock.patch('builtins.input', return_value=user_input):
-                self.assertRaises(ValueError, self.game.validate_input)
+        self.assertRaises(ValueError, self.game.validate_input, user_input)
 
 
 class ShowBoardTest(unittest.TestCase):
@@ -75,16 +73,29 @@ class ShowBoardTest(unittest.TestCase):
         self.assertEqual(self.empty_board_out, captured_out.getvalue())
 
 
-class CheckWinnerTest(unittest.TestCase):
+class CheckWinnerOrTieTest(unittest.TestCase):
 
-    "Test case for TicTacGame.chek_winner."
+    "Test case for TicTacGame.check_winner_or_tie."
 
     def setUp(self):
         self.game = TicTacGame()
 
     def test_empty_board(self):
         "Test correct output for empty board."
-        self.assertEqual(False, self.game.check_winner())
+        self.assertEqual('no', self.game.check_winner_or_tie())
+
+
+def ignore_stdout(func):
+
+    "Decorator to ignore stuff printed to stdout"
+
+    def wrapper(*argc, **argw):
+        sys.stdout = StringIO()
+        result = func(*argc, **argw)
+        sys.stdout = sys.__stdout__
+        return result
+
+    return wrapper
 
 
 class StartgameTest(unittest.TestCase):
@@ -152,21 +163,29 @@ class StartgameTest(unittest.TestCase):
                 '2 2',
                 '2 0',
             ),
+            # tie
+            (
+                '0 0',
+                '1 1',
+                '0 2',
+                '0 1',
+                '2 0',
+                '1 0',
+                '1 2',
+                '2 2',
+                '2 1',
+            ),
         )
-        self.winners = (
+        self.results = (
             'x',
             'x',
             'o',
             'x',
             'o',
+            'tie',
         )
-        self.games = [TicTacGame() for _ in range(len(self.moves_for_games))]
+        self.game = TicTacGame()
         self.game_idx = 0
-        self.move_idx = 0
-
-    def set_game(self, game_idx):
-        "Set game_idx as current game"
-        self.game_idx = game_idx
         self.move_idx = 0
 
     def get_move(self, *argc):  # pylint: disable=unused-argument
@@ -175,19 +194,59 @@ class StartgameTest(unittest.TestCase):
         self.move_idx += 1
         return move
 
-    def test_start_game(self):
-        """
-        Test correct winner selection and correct moves number
-        (for each game scenario in self.moves_for_games).
-        """
-        sys.stdout = StringIO()
-        for game_idx, moves in enumerate(self.moves_for_games):
-            self.set_game(game_idx)
-            with unittest.mock.patch('builtins.input', self.get_move):
-                winner = self.games[game_idx].start_game()
-                self.assertEqual(winner, self.winners[game_idx])
-                self.assertEqual(self.move_idx, len(moves))
-        sys.stdout = sys.__stdout__
+    @ignore_stdout
+    def test_start_game_0(self):
+        "Test correct winner selection and correct moves number."
+        self.game_idx = 0
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
+
+    @ignore_stdout
+    def test_start_game_1(self):
+        "Test correct winner selection and correct moves number"
+        self.game_idx = 1
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
+
+    @ignore_stdout
+    def test_start_game_2(self):
+        "Test correct winner selection and correct moves number"
+        self.game_idx = 2
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
+
+    @ignore_stdout
+    def test_start_game_3(self):
+        "Test correct winner selection and correct moves number"
+        self.game_idx = 3
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
+
+    @ignore_stdout
+    def test_start_game_4(self):
+        "Test correct winner selection and correct moves number"
+        self.game_idx = 4
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
+
+    @ignore_stdout
+    def test_start_game_5(self):
+        "Test correct winner selection and correct moves number"
+        self.game_idx = 5
+        with unittest.mock.patch('builtins.input', self.get_move):
+            result = self.game.start_game()
+            self.assertEqual(result, self.results[self.game_idx])
+            self.assertEqual(self.move_idx, len(self.moves_for_games[self.game_idx]))
 
 
 if __name__ == '__main__':
