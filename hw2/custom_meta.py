@@ -3,7 +3,7 @@
 
 class CustomMeta(type):
 
-    "Meta class which adds 'custom_' to every attribute/method name."
+    "Meta class which adds 'custom_' to every attribute/method name (except magic methods)."
 
     def __new__(cls, clsname, bases, attrs):
         res_attrs = {}
