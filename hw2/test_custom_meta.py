@@ -32,6 +32,6 @@ class CustomMetaTest(unittest.TestCase):
 
     def test_old_attr_names(self):
         "Test attributes names (without custom_)."
-        self.assertRaises(AttributeError, lambda : self.inst.x)
-        self.assertRaises(AttributeError, lambda : self.inst.val)
-        self.assertRaises(AttributeError, lambda : self.inst.line())
+        self.assertRaises(AttributeError, lambda: self.inst.x)
+        self.assertRaises(AttributeError, lambda: self.inst.val)
+        self.assertRaises(AttributeError, lambda: self.inst.line())
