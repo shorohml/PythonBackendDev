@@ -13,6 +13,9 @@ class CustomMeta(type):
             else:
                 res_attrs['custom_' + attr] = val
 
+        if '__init__' not in attrs:
+            return super().__new__(cls, clsname, bases, res_attrs)
+
         def init(self, *args, **kwargs):
             attrs['__init__'](self, *args, **kwargs)
             dict_mods = {}
