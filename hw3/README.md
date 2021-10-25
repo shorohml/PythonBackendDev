@@ -11,7 +11,8 @@ gunicorn --workers 4 myapp:app
 ```
 
 ## Запуск nginx
-First edit /etc/nginx/nginx.conf (insert part from ./nginx.conf), then
+
+Добавить кусок из ./nginx.conf в /etc/nginx/nginx.conf, затем выполнить
 ```
 sudo /etc/init.d/nginx start
 ```
