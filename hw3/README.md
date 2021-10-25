@@ -1,0 +1,32 @@
+## Установка пакетов
+
+```
+sudo apt-get install -y nginx apache2-utils
+```
+
+## Запуск gunicorn
+
+```
+gunicorn --workers 4 myapp:app
+```
+
+## Запуск nginx
+First edit /etc/nginx/nginx.conf (insert part from ./nginx.conf), then
+```
+sudo /etc/init.d/nginx start
+```
+
+### Параметры для отказа системы:
+
+- отдача статических файлов (cat.jpg):
+```
+ab -n 5000 -c 781 127.0.0.1:8080/cat.jpg
+```
+- отдача динамических документов Gunicorn:
+```
+ab -n 5000 -c 1021 127.0.0.1:8000/
+```
+- отдача динамических документов Gunicorn при проксировании через Nginx:
+```
+ab -n 5000 -c 414 127.0.0.1:8080/api/v1/
+```
