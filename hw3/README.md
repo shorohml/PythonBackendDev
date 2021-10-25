@@ -21,7 +21,7 @@ sudo /etc/init.d/nginx start
 
 - отдача статических файлов (cat.jpg):
 ```
-ab -n 10000 -c 2500 127.0.0.1:8080/cat.jpg
+ab -n 10000 -c 2500 127.0.0.1:8080/static/cat.jpg
 ```
 - отдача динамических документов Gunicorn:
 ```
